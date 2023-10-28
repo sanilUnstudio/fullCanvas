@@ -39,7 +39,8 @@ const Draw = ({ target,  setProductVisible }) => {
                 height: height/2,
                 left: width/3,
                 top:height/3.5,
-                fill: "#FFFFFF",
+                stroke: "#fae27a",
+                fill:"#1d1d20",
                 selectable: false
             })
         );
