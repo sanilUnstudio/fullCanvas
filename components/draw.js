@@ -2,22 +2,19 @@
 import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
 
-const Draw = () => {
+const Draw = ({ target,  setProductVisible }) => {
     const [canvas, setCanvas] = useState ();
 
-    let width = 500;
-    let height = 500;
+    let width = window?.innerWidth;
+    let height = window?.innerHeight;
+
     function updateSize() {
-        width = window.innerWidth;
+        const windowWidth = window.innerWidth;
+        const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+         width = windowWidth - 5 * remSize;
         height = window.innerHeight;
-        console.log(width,height)
     }
-    const canva = {
-        width: 500,
-        height: 500,
-        left: 200,
-        top: 200
-    };
+   
     useEffect(() => {
         updateSize();
         window.addEventListener('resize', (e) => {
@@ -63,6 +60,31 @@ const Draw = () => {
         canvas?.add(rect);
         canvas?.requestRenderAll();
     };
+
+    useEffect(() => {
+        if (canvas) {
+            
+            fabric.Image.fromURL(
+                target,
+                function (img) {
+                    var scale = 0.2;
+                    img.set({
+                        left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
+                        top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
+                        scaleX: (scale * canvas.width) / img.width,
+                        scaleY: (scale * canvas.height) / img.height
+                    });
+                    canvas.add(img);
+                    canvas?.requestRenderAll();
+                    console.log(canvas._offset)
+                },
+                {
+                    crossOrigin: "anonymous"
+                }
+            );
+            setProductVisible(false)
+        }
+    },[target])
 
     return (
         <div className="relative">
