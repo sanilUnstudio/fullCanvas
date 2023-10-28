@@ -4,13 +4,13 @@ const Sidebar = ({file, setFile, setTarget, productVisible, setProductVisible}) 
     
 console.log(file)
   return (
-      <div className='flex flex-col gap-4 py-8 min-w-[5rem] items-center'>
-          <p className='text-black cursor-pointer' onClick={()=> setProductVisible(!productVisible)} >product</p>
-          <p className='text-black cursor-pointer'>props</p>
-          <p className='text-black cursor-pointer'>Miracle</p>
+      <div className='flex flex-col gap-4 py-8 min-w-[5rem] bg-[#18181a] items-center'>
+          <p className=' cursor-pointer' onClick={()=> setProductVisible(!productVisible)} >product</p>
+          <p className=' cursor-pointer'>props</p>
+          <p className=' cursor-pointer'>Miracle</p>
 
-         {productVisible && <div className='absolute left-20 z-10 top-0 bg-gray-500 h-screen'>
-              <input type='file' multiple onChange={(e) => setFile((prev) => {
+         {productVisible && <div className='absolute left-20 z-10 top-0 bg-[#18181a] border-l h-screen'>
+              <input type='file' className='text-center' multiple onChange={(e) => setFile((prev) => {
                   if (e.target.files.length == 1) {
                       return [...prev, URL.createObjectURL(e.target.files[0])]
                   } else {

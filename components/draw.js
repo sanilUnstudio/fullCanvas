@@ -23,7 +23,7 @@ const Draw = ({ target,  setProductVisible }) => {
         const c = new fabric.Canvas("canvas", {
             height:height,
             width:width,
-            backgroundColor: "black",
+            backgroundColor: "#1d1d20",
             stopContextMenu: true,
             fireRightClick: true
         });
@@ -38,7 +38,7 @@ const Draw = ({ target,  setProductVisible }) => {
                 width: width/3,
                 height: height/2,
                 left: width/3,
-                top:height/3,
+                top:height/3.5,
                 fill: "#FFFFFF",
                 selectable: false
             })
