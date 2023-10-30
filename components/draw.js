@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
 
-const Draw = ({ target,  setProductVisible, sketch, eraser }) => {
+const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth, eraserWidth }) => {
     const [canvas, setCanvas] = useState ();
 
     let width = window?.innerWidth;
@@ -43,7 +43,8 @@ const Draw = ({ target,  setProductVisible, sketch, eraser }) => {
                 top:height/3.5,
                 stroke: "#fae27a",
                 fill:"#1d1d20",
-                selectable: false
+                selectable: false,
+                evented: false
             })
         );
 
@@ -65,74 +66,53 @@ const Draw = ({ target,  setProductVisible, sketch, eraser }) => {
         canvas?.requestRenderAll();
     };
 
-
-    // var drawingModeEl ,
-    //     drawingOptionsEl,
-    //     drawingColorEl = '#ff0000',
-    //     drawingShadowColorEl = '#ff0000',
-    //     drawingLineWidthEl ,
-    //     drawingShadowWidth = 0,
-    //     drawingShadowOffset = 0,
-    //     clearEl ;
-    function eraserBrush() {
-        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-        canvas.freeDrawingBrush.width = 10;
-        canvas.isDrawingMode = true;
-    }
-
     function PencilBrush() {
         if (sketch) {
             canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-            canvas.freeDrawingBrush.color = '#ff0000';
-            canvas.freeDrawingBrush.width = parseInt(3, 10) || 1;
+            canvas.freeDrawingBrush.color = lineColor;
+            canvas.freeDrawingBrush.width = lineWidth;
             canvas.freeDrawingBrush.shadow = new fabric.Shadow({
                 blur: parseInt(0, 10) || 0,
                 offsetX: 0,
                 offsetY: 0,
                 affectStroke: true,
-                color: '#ff0000',
+                color: lineColor,
             });
         }
 
-        // drawingColorEl.onchange = function () {
-        //     canvas.freeDrawingBrush.color = this.value;
-        // };
-
-        // drawingLineWidthEl.onchange = function () {
-        //     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
-        //     this.previousSibling.innerHTML = this.value;
-        // };
-
-        // drawingShadowColorEl.onchange = function () {
-        //     canvas.freeDrawingBrush.shadow.color = this.value;
-        // };
-
-        // drawingShadowWidth.onchange = function () {
-        //     canvas.freeDrawingBrush.shadow.blur = parseInt(this.value, 10) || 0;
-        //     this.previousSibling.innerHTML = this.value;
-        // };
-
-        // drawingShadowOffset.onchange = function () {
-        //     canvas.freeDrawingBrush.shadow.offsetX = parseInt(this.value, 10) || 0;
-        //     canvas.freeDrawingBrush.shadow.offsetY = parseInt(this.value, 10) || 0;
-        //     this.previousSibling.innerHTML = this.value;
-        // };
-
     }
     useEffect(() => {
-
-        if (canvas) {
-            canvas.isDrawingMode = !canvas.isDrawingMode;
+        if (canvas && sketch) {
+            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+            canvas.freeDrawingBrush.color = lineColor;
+            canvas.freeDrawingBrush.width = lineWidth;
+            canvas.isDrawingMode = true;
+        } else {
+            if (canvas) {
+                canvas.isDrawingMode = false;
+            }
         }
-        PencilBrush()
     }, [sketch])
     
     useEffect(() => {
-        if (canvas) {
+        if (canvas && eraser) {
             canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+            canvas.freeDrawingBrush.width = eraserWidth
             canvas.isDrawingMode = true;
+        } 
+    }, [eraser])
+    
+    useEffect(() => {
+        if (canvas && canvas.freeDrawingBrush) {
+            canvas.freeDrawingBrush.width = lineWidth
+            canvas.freeDrawingBrush.color = lineColor
         }
-    },[eraser])
+    },[lineColor,lineWidth])
+    useEffect(() => {
+        if (canvas && canvas.freeDrawingBrush) {
+            canvas.freeDrawingBrush.width = eraserWidth
+        }
+    },[eraserWidth])
 
     useEffect(() => {
         if (canvas) {

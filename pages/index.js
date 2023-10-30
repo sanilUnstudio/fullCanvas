@@ -1,9 +1,6 @@
 import Image from 'next/image'
 import { useState } from 'react'
-import { Inter } from 'next/font/google'
 import dynamic from 'next/dynamic'
-
-const inter = Inter({ subsets: ['latin'] })
 const Canvas = dynamic(() => import('../components/draw'), { ssr: false })
 import Sidebar from "../components/sidebar"
 export default function Home() {
@@ -11,7 +8,10 @@ export default function Home() {
   const [target, setTarget] = useState();
   const [productVisible, setProductVisible] = useState(false);
   const [sketch, setSketch] = useState(false);
-  const [eraser, setEraser] = useState(false)
+  const [eraser, setEraser] = useState(false);
+  const [lineColor, setLineColor] = useState('#ff0000');
+  const [lineWidth, setLineWidth] = useState(4);
+  const [eraserWidth, setEraserWidth] = useState(4);
 
   return (
     <div className='bg-white h-screen  flex'>
@@ -24,9 +24,23 @@ export default function Home() {
         setSketch={setSketch}
         sketch={sketch}
         eraser={eraser}
-        setEraser ={setEraser}
+        setEraser={setEraser}
+        lineColor={lineColor}
+        setLineColor={setLineColor}
+        lineWidth={lineWidth}
+        setLineWidth={setLineWidth}
+        eraserWidth={eraserWidth}
+        setEraserWidth={setEraserWidth}
       />
-   <Canvas target={target} sketch={sketch} eraser={eraser}  setProductVisible={setProductVisible} />
+      <Canvas
+        target={target}
+        sketch={sketch}
+        eraser={eraser}
+        setProductVisible={setProductVisible}
+        lineWidth={lineWidth}
+        lineColor={lineColor}
+        eraserWidth={eraserWidth}
+      />
     </div>
   )
 }
