@@ -10,6 +10,8 @@ export default function Home() {
   const [file, setFile] = useState([]);
   const [target, setTarget] = useState();
   const [productVisible, setProductVisible] = useState(false);
+  const [sketch, setSketch] = useState(false);
+  const [eraser, setEraser] = useState(false)
 
   return (
     <div className='bg-white h-screen  flex'>
@@ -19,8 +21,12 @@ export default function Home() {
         setTarget={setTarget}
         productVisible={productVisible}
         setProductVisible={setProductVisible}
+        setSketch={setSketch}
+        sketch={sketch}
+        eraser={eraser}
+        setEraser ={setEraser}
       />
-   <Canvas target={target}  setProductVisible={setProductVisible} />
+   <Canvas target={target} sketch={sketch} eraser={eraser}  setProductVisible={setProductVisible} />
     </div>
   )
 }

@@ -6,13 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "cd node_modules/fabric && npm install  && node build.js modules=ALL requirejs exclude=gestures,accessors"
   },
   "dependencies": {
+    "@chakra-ui/react": "^2.8.1",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "fabric": "^5.3.0",
+    "framer-motion": "^10.16.4",
     "next": "13.5.6",
     "react": "^18",
     "react-dom": "^18"
+    
   },
   "devDependencies": {
     "autoprefixer": "^10",

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
 
-const Draw = ({ target,  setProductVisible }) => {
+const Draw = ({ target,  setProductVisible, sketch, eraser }) => {
     const [canvas, setCanvas] = useState ();
 
     let width = window?.innerWidth;
@@ -25,7 +25,9 @@ const Draw = ({ target,  setProductVisible }) => {
             width:width,
             backgroundColor: "#1d1d20",
             stopContextMenu: true,
-            fireRightClick: true
+            fireRightClick: true,
+            isDrawingMode: false,
+            freeDrawingBrush: true
         });
 
         fabric.Object.prototype.transparentCorners = false;
@@ -44,6 +46,7 @@ const Draw = ({ target,  setProductVisible }) => {
                 selectable: false
             })
         );
+
         setCanvas(c);
 
         return () => {
@@ -62,9 +65,77 @@ const Draw = ({ target,  setProductVisible }) => {
         canvas?.requestRenderAll();
     };
 
+
+    // var drawingModeEl ,
+    //     drawingOptionsEl,
+    //     drawingColorEl = '#ff0000',
+    //     drawingShadowColorEl = '#ff0000',
+    //     drawingLineWidthEl ,
+    //     drawingShadowWidth = 0,
+    //     drawingShadowOffset = 0,
+    //     clearEl ;
+    function eraserBrush() {
+        canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+        canvas.freeDrawingBrush.width = 10;
+        canvas.isDrawingMode = true;
+    }
+
+    function PencilBrush() {
+        if (sketch) {
+            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+            canvas.freeDrawingBrush.color = '#ff0000';
+            canvas.freeDrawingBrush.width = parseInt(3, 10) || 1;
+            canvas.freeDrawingBrush.shadow = new fabric.Shadow({
+                blur: parseInt(0, 10) || 0,
+                offsetX: 0,
+                offsetY: 0,
+                affectStroke: true,
+                color: '#ff0000',
+            });
+        }
+
+        // drawingColorEl.onchange = function () {
+        //     canvas.freeDrawingBrush.color = this.value;
+        // };
+
+        // drawingLineWidthEl.onchange = function () {
+        //     canvas.freeDrawingBrush.width = parseInt(this.value, 10) || 1;
+        //     this.previousSibling.innerHTML = this.value;
+        // };
+
+        // drawingShadowColorEl.onchange = function () {
+        //     canvas.freeDrawingBrush.shadow.color = this.value;
+        // };
+
+        // drawingShadowWidth.onchange = function () {
+        //     canvas.freeDrawingBrush.shadow.blur = parseInt(this.value, 10) || 0;
+        //     this.previousSibling.innerHTML = this.value;
+        // };
+
+        // drawingShadowOffset.onchange = function () {
+        //     canvas.freeDrawingBrush.shadow.offsetX = parseInt(this.value, 10) || 0;
+        //     canvas.freeDrawingBrush.shadow.offsetY = parseInt(this.value, 10) || 0;
+        //     this.previousSibling.innerHTML = this.value;
+        // };
+
+    }
+    useEffect(() => {
+
+        if (canvas) {
+            canvas.isDrawingMode = !canvas.isDrawingMode;
+        }
+        PencilBrush()
+    }, [sketch])
+    
     useEffect(() => {
         if (canvas) {
-            
+            canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+            canvas.isDrawingMode = true;
+        }
+    },[eraser])
+
+    useEffect(() => {
+        if (canvas) {
             fabric.Image.fromURL(
                 target,
                 function (img) {
