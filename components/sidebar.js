@@ -39,6 +39,24 @@ const Sidebar = ({
     useEffect(() => {
 
     }, [])
+
+    const hitAPI = async () => {
+        try {
+            console.log('Sending API req');
+            const response = await fetch('/api/hello', {
+                method:'POST',
+            headers:{
+                "Content-Type" :"application/json",
+
+            },
+            body:JSON.stringify({msg:"dummy message"})
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            
+        }
+    }
     return (
         <div ref={divRef} className='flex flex-col text-white gap-4 py-8 min-w-[5rem] bg-[#18181a] items-center'>
             <p className=' cursor-pointer' onClick={() => (setProductVisible(!productVisible), setSketchOpen(false))} >product</p>
@@ -130,6 +148,7 @@ const Sidebar = ({
                 </div>
 
             </div>}
+            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={hitAPI} >Hit API</button>
         </div>
     )
 }

@@ -1,5 +1,9 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+export default async function handler(req, res) {
+  const { msg } = req.body;
 
-export default function handler(req, res) {
-  res.status(200).json({ name: 'John Doe' })
+  // Use a Promise to wait for the setTimeout to complete
+  await new Promise(resolve => setTimeout(resolve, 3000));
+
+  // Send the response after the delay
+  res.status(200).json({ name: 'John Doe', msg: msg });
 }

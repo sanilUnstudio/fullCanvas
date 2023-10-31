@@ -55,7 +55,6 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         setClips(clip)
         c.add(clip);
 
-
         setCanvas(c);
 
         return () => {
