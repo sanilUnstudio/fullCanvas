@@ -147,7 +147,7 @@ const Sidebar = ({
             width: clips.width,
             height: clips.height,
         });
-        console.log(productCanvas)
+
 
         canvas.forEachObject(function (obj) {
 
@@ -156,17 +156,16 @@ const Sidebar = ({
                 objBound.left + objBound.width < clips.left ||
                 objBound.top > clips.top + clips.height ||
                 objBound.top + objBound.height < clips.top)) {
+                console.log(obj)
                  if(obj.type == 'path')
 				return;
 			if (!obj.mask) {
-				//console.log('To add ', obj);
-			
 				const image = fabric.util.object.clone(obj);
 				productCanvas.add(image);
 			}
             }
         });
-        console.log(productCanvas)
+
 
         var productDataURL = productCanvas.toDataURL({
             format: 'png',
@@ -231,7 +230,7 @@ const Sidebar = ({
                     objBound.left + objBound.width < clips.left ||
                     objBound.top > clips.top + clips.height ||
                     objBound.top + objBound.height < clips.top)) {
-                    if (obj.type == 'line' || obj.type == 'path') return;
+                    // if (obj.type == 'line' || obj.type == 'path') return;
 
                     if (obj.mask) {
                         // const promise = new Promise((resolve) => {
