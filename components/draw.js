@@ -131,17 +131,18 @@ const Draw = ({
             fabric.Image.fromURL(
                 target,
                 function (img) {
-                    var scale = 0.3;
-                    const canvasWidth = clips.width;
-                    const canvasHeight = clips.height;
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
                     img.set({
-                        left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
-                        top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
+                        left:  0,
+                        top: 0,
                         cors: 'anonymous',
                         mask:false
                     })
-                    img.scaleToWidth(canvasWidth * 0.75);
-                    img.scaleToHeight(canvasHeight * 0.75);
+                    img.scaleToWidth(clips.width * 0.75);
+                    img.scaleToHeight(clips.height * 0.75);
+                    img.left = (canvas.width - img.getScaledWidth()) / 2;
+                    img.top = (canvas.height - img.getScaledHeight()) / 2 + 40 ;
                     canvas.add(img);
                     canvas?.requestRenderAll();
                     console.log(canvas._offset)
