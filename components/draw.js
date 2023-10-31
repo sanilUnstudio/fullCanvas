@@ -2,13 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { fabric } from "fabric";
 
-const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth, eraserWidth }) => {
-    const [canvas, setCanvas] = useState ();
+const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth, eraserWidth, canvas, setCanvas, clips, setClips }) => {
+    
 
     let width = window?.innerWidth;
     let height = window?.innerHeight;
     let clip;
-    const [clips, setClips] = useState();
+    
+    
 
     function updateSize() {
         const windowWidth = window.innerWidth;
@@ -143,49 +144,11 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         }
     }, [target])
 
-    function dataURLtoBlob(dataURL) {
-        var byteString = atob(dataURL.split(',')[1]);
-        var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
-
-        var ab = new ArrayBuffer(byteString.length);
-        var ia = new Uint8Array(ab);
-        for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-
-        return new Blob([ab], { type: mimeString });
-    }
-
-    async function handleBlob() {
-       
-        let dataURL = canvas.toDataURL({
-            format: 'png',
-            width: clips.width,
-            height:clips.height,
-            left: clips.left,
-            top: clips.top,
-            quality: 1 
-        });
-
-        let blob = dataURLtoBlob(dataURL);
-        const rm = await getBase64(blob);
-        console.log({'blob':rm})
-   }
-
-
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-        });
-    }
+   
 
     return (
         <div className="relative">
             <canvas id="canvas" />
-            <button className="absolute top-4 left-4 text-white" onClick={()=>handleBlob()}>BLOB</button>
         </div>
     );
 };

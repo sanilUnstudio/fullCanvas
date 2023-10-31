@@ -15,7 +15,9 @@ const Sidebar = ({
     eraserWidth,
     setEraserWidth,
     lineColor,
-    setLineColor
+    setLineColor,
+    canvas,
+    clips
 }) => {
 
     const [sketchOpen, setSketchOpen] = useState(false);
@@ -56,6 +58,45 @@ const Sidebar = ({
         } catch (error) {
             
         }
+    }
+
+    function dataURLtoBlob(dataURL) {
+        var byteString = atob(dataURL.split(',')[1]);
+        var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ab], { type: mimeString });
+    }
+
+    async function handleBlob() {
+
+        let dataURL = canvas.toDataURL({
+            format: 'png',
+            width: clips.width,
+            height: clips.height,
+            left: clips.left,
+            top: clips.top,
+            quality: 1
+        });
+
+        let blob = dataURLtoBlob(dataURL);
+        const rm = await getBase64(blob);
+        console.log({ 'blob': rm })
+    }
+
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
     }
     return (
         <div ref={divRef} className='flex flex-col text-white gap-4 py-8 min-w-[5rem] bg-[#18181a] items-center'>
@@ -148,8 +189,11 @@ const Sidebar = ({
                 </div>
 
             </div>}
-            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={hitAPI} >Hit API</button>
+            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={handleBlob} >Blob</button>
         </div>
+
+
+        
     )
 }
 

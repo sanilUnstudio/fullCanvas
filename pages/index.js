@@ -18,6 +18,8 @@ export default function Home() {
   const [lineColor, setLineColor] = useState('#ff0000');
   const [lineWidth, setLineWidth] = useState(4);
   const [eraserWidth, setEraserWidth] = useState(4);
+  const [canvas, setCanvas] = useState();
+  const [clips, setClips] = useState();
 
   return (
     <div className='bg-white h-screen  flex'>
@@ -37,7 +39,10 @@ export default function Home() {
         setLineWidth={setLineWidth}
         eraserWidth={eraserWidth}
         setEraserWidth={setEraserWidth}
+        canvas={canvas}
+        clips={clips}
       />
+      
       <Canvas
         target={target}
         sketch={sketch}
@@ -46,6 +51,10 @@ export default function Home() {
         lineWidth={lineWidth}
         lineColor={lineColor}
         eraserWidth={eraserWidth}
+        canvas={canvas}
+        setCanvas={setCanvas}
+        setClips={setClips}
+        clips={clips}
       />
     </div>
   )
