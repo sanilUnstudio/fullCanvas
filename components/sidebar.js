@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Switch } from '@chakra-ui/react'
+import { fabric } from "fabric";
+
 const Sidebar = ({
     file,
     setFile,
@@ -98,6 +100,212 @@ const Sidebar = ({
             reader.onerror = (error) => reject(error);
         });
     }
+
+
+    function generateProductWithInvertMaskBase64() {
+        let productWithInvertMaskCanvas = new fabric.Canvas();
+        productWithInvertMaskCanvas.setDimensions({
+            width:clips.width,
+            height: clips.height,
+        });
+
+        canvas.forEachObject(function (obj) {
+            var objBound = obj.getBoundingRect();
+            if (!(objBound.left > clips.left + clips.width ||
+                objBound.left + objBound.width < clips.left ||
+                objBound.top > clips.top + clips.height ||
+                objBound.top + objBound.height < clips.top)) {
+              
+                if (!obj.mask) {
+                    const image = fabric.util.object.clone(obj);
+                    productWithInvertMaskCanvas.add(image);
+                }
+                else {
+                    // obj.clone(function (mask) {
+                    //     productWithInvertMaskCanvas.add(mask);
+                    // });
+                }
+                
+            }
+        });
+
+        var productWithInvertMaskDataURL =
+            productWithInvertMaskCanvas.toDataURL({
+                format: 'png',
+                width: clips.width,
+                height: clips.height,
+                left: clips.left,
+                top: clips.top,
+                quality: 1
+            });
+        return productWithInvertMaskDataURL;
+    }
+
+    function generateProductBase64() {
+        let productCanvas = new fabric.Canvas();
+        productCanvas.setDimensions({
+            width: clips.width,
+            height: clips.height,
+        });
+        console.log(productCanvas)
+
+        canvas.forEachObject(function (obj) {
+
+            var objBound = obj.getBoundingRect();
+            if (!(objBound.left > clips.left + clips.width ||
+                objBound.left + objBound.width < clips.left ||
+                objBound.top > clips.top + clips.height ||
+                objBound.top + objBound.height < clips.top)) {
+                 if(obj.type == 'path')
+				return;
+			if (!obj.mask) {
+				//console.log('To add ', obj);
+			
+				const image = fabric.util.object.clone(obj);
+				productCanvas.add(image);
+			}
+            }
+        });
+        console.log(productCanvas)
+
+        var productDataURL = productCanvas.toDataURL({
+            format: 'png',
+            width: clips.width,
+            height: clips.height,
+            left: clips.left,
+            top: clips.top,
+            quality: 1
+});
+        console.log({productDataURL})
+        return productDataURL;
+    }
+
+    // function generateMaskBase64() {
+    //     var maskCanvas = new fabric.Canvas();
+    //     maskCanvas.setDimensions({
+    //         width: clips.width,
+    //         height: clips.height,
+    //     });
+    //     maskCanvas.backgroundColor = 'black';
+
+    //     let flag = false;
+    //     canvas.forEachObject(function (obj) {
+    //         var objBound = obj.getBoundingRect();
+    //         if (!(objBound.left > clips.left + clips.width ||
+    //             objBound.left + objBound.width < clips.left ||
+    //             objBound.top > clips.top + clips.height ||
+    //             objBound.top + objBound.height < clips.top)) {
+    //             obj.clone(function (mask) {
+    //                 mask.forEachObject(function (path) {
+    //                     path.set({
+    //                         stroke: '#FFFFFF',
+    //                         fill: '#FFFFFF',
+    //                         dirty: true,
+    //                     });
+    //                 });
+    //                 maskCanvas.renderAll();
+    //                 maskCanvas.add(mask);
+    //             });
+    //         }
+    //     });
+
+    //     var maskDataURL = maskCanvas.toDataURL();
+    //     return { maskDataURL };
+    // }
+
+    async function generateInverseMaskBase64() {
+        const inverseMaskCanvas = new fabric.Canvas();
+        inverseMaskCanvas.setDimensions({
+            width: clips.width,
+            height: clips.height,
+        });
+        inverseMaskCanvas.backgroundColor = 'white';
+
+        return new Promise((resolve) => {
+            const promises = [];
+
+            canvas.forEachObject(function (obj) {
+
+                        let objBound = obj.getBoundingRect();
+                if (!(objBound.left > clips.left + clips.width ||
+                    objBound.left + objBound.width < clips.left ||
+                    objBound.top > clips.top + clips.height ||
+                    objBound.top + objBound.height < clips.top)) {
+                    if (obj.type == 'line' || obj.type == 'path') return;
+
+                    if (obj.mask) {
+                        // const promise = new Promise((resolve) => {
+                        //     obj.clone(function (mask) {
+                        //         mask.forEachObject(function (path) {
+                        //             path.set({
+                        //                 stroke: '#FFFFFF',
+                        //                 fill: '#FFFFFF',
+                        //                 dirty: true,
+                        //             });
+                        //         });
+                        //         inverseMaskCanvas.add(mask);
+                        //         resolve();
+                        //     });
+                        // });
+                        // promises.push(promise);
+                    } else {
+                        const image = fabric.util.object.clone(obj);
+
+                        const top = image.top,
+                            left = image.left,
+                            height = image.getScaledHeight(),
+                            width = image.getScaledWidth();
+
+                        image.left = (-1 * width) / 2;
+                        image.top = (-1 * height) / 2;
+                        image.angle = 0;
+
+                        const inverse = new fabric.Rect({
+                            fill: 'black',
+                            top: top,
+                            left: left,
+                            height: height,
+                            width: width,
+                            angle: obj.angle,
+                            clipPath: image,
+                        });
+
+                        inverseMaskCanvas.add(inverse);
+                    }
+                }
+            });
+            inverseMaskCanvas.renderAll();
+            // Wait for all promises to resolve before generating data URL
+            Promise.all(promises).then(() => {
+                // Delay the rendering process by a short time to ensure all objects are fully rendered on the canvas
+                inverseMaskCanvas.renderAll();
+                setTimeout(() => {
+                    const inverseMaskDataURL = inverseMaskCanvas.toDataURL({
+                        format: 'png',
+                        width: clips.width,
+                        height: clips.height,
+                        left: clips.left,
+                        top: clips.top,
+                        quality: 1
+                    });
+                    resolve(inverseMaskDataURL);
+                }, 100); // You can adjust the delay time based on your requirements
+            });
+            inverseMaskCanvas.renderAll();
+        });
+    }
+
+
+    async function handleConvert() {
+        console.log('Handling convert');
+        const withoutbgBase64 = generateProductWithInvertMaskBase64();
+        const productBase64 = generateProductBase64();
+        // const { maskbase64 } = generateMaskBase64();
+        const inverseMaskBase64 = await generateInverseMaskBase64();
+        // const color = isColored();
+        console.log({ withoutbgBase64, productBase64, inverseMaskBase64 }) ;
+      
+    }
     return (
         <div ref={divRef} className='flex flex-col text-white gap-4 py-8 min-w-[5rem] bg-[#18181a] items-center'>
             <p className=' cursor-pointer' onClick={() => (setProductVisible(!productVisible), setSketchOpen(false))} >product</p>
@@ -133,7 +341,7 @@ const Sidebar = ({
                 <div className='flex flex-col gap-4 justify-center py-4 px-4'>
                     <div className='flex gap-4 items-center'>
                         <p>Pencil</p>
-                        <Switch size='md' isChecked={sketch} onChange={() => { setSketch(!sketch), setEraser(false) }} />
+                        <Switch size='md' isChecked={sketch} onChange={() => { setSketch(!sketch); setEraser(false) }} />
                     </div>
                     <div className='flex flex-col gap-4'>
                         <label>Pencil Width</label>
@@ -178,7 +386,7 @@ const Sidebar = ({
                     </div>
                     <div className='flex items-center gap-4'>
                         <p>Eraser</p>
-                        <Switch size='md' isChecked={eraser} onChange={() => { setEraser(!eraser), setSketch(false) }} />
+                        <Switch size='md' isChecked={eraser} onChange={() => { setEraser(!eraser); setSketch(false) }} />
                     </div>
                 <div className='flex flex-col gap-4'>
                     <label>Eraser Width</label>
@@ -189,7 +397,7 @@ const Sidebar = ({
                 </div>
 
             </div>}
-            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={handleBlob} >Blob</button>
+            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={handleConvert} >Blob</button>
         </div>
 
 

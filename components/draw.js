@@ -1,15 +1,24 @@
 "use client"; 
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { fabric } from "fabric";
 
-const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth, eraserWidth, canvas, setCanvas, clips, setClips }) => {
-    
+const Draw = ({
+    target,
+    setProductVisible,
+    sketch,
+    eraser,
+    lineColor,
+    lineWidth,
+    eraserWidth,
+    canvas,
+    setCanvas,
+    clips,
+    setClips
+}) => {
 
     let width = window?.innerWidth;
     let height = window?.innerHeight;
     let clip;
-    
-    
 
     function updateSize() {
         const windowWidth = window.innerWidth;
@@ -20,8 +29,6 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
 
 
 
-
-   
     useEffect(() => {
         updateSize();
         window.addEventListener('resize', (e) => {
@@ -33,8 +40,6 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
             backgroundColor: "#1d1d20",
             stopContextMenu: true,
             fireRightClick: true,
-            isDrawingMode: false,
-            freeDrawingBrush: true
         });
 
         fabric.Object.prototype.transparentCorners = false;
@@ -51,7 +56,8 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
             stroke: "#fae27a",
             fill: "#1d1d20",
             selectable: false,
-            erasable: false
+            erasable: false,
+            mask:true
         })
         setClips(clip)
         c.add(clip);
@@ -70,7 +76,7 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
 
     useEffect(() => {
         if (canvas) {
-            if (sketch) {      
+            if (sketch && !canvas.isDrawingMode) {      
                 canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
                 canvas.isDrawingMode = sketch;
                 canvas.freeDrawingBrush.color = lineColor;
@@ -84,13 +90,16 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
     }, [sketch])
     
 
-    
+
     useEffect(() => {
         if (canvas) {
-            if (eraser) {
+            if (eraser && !canvas.isDrawingMode) {
                 canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-                canvas.isDrawingMode = true;
+                canvas.isDrawingMode = eraser;
                 canvas.freeDrawingBrush.width = parseInt(eraserWidth, 10)
+            } else {
+                canvas.freeDrawingBrush = null;
+                canvas.isDrawingMode = false;
             }
         } 
     }, [eraser])
@@ -129,6 +138,7 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
                         left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
                         top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
                         cors: 'anonymous',
+                        mask:false
                     })
                     img.scaleToWidth(canvasWidth * 0.75);
                     img.scaleToHeight(canvasHeight * 0.75);
@@ -143,6 +153,7 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
             setProductVisible(false)
         }
     }, [target])
+
 
    
 
