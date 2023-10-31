@@ -4,7 +4,13 @@ import dynamic from 'next/dynamic'
 const Canvas = dynamic(() => import('../components/draw'), { ssr: false })
 import Sidebar from "../components/sidebar"
 export default function Home() {
-  const [file, setFile] = useState([]);
+  const data = [
+    "https://ik.imagekit.io/ei5bqbiry/unstudio_pictures_aseemkhanduja_gmail.com_image-1607_Y0XCEW8gCO.jpg?updatedAt=1698674245770",
+    "https://ik.imagekit.io/ei5bqbiry/default%20products/shashank_unstudio.ai_1694772569_8644261116_QDqDEEfXk.png?updatedAt=1695098791412",
+    "https://ik.imagekit.io/ei5bqbiry/assets/storageblogsoumya_gmail.com_1698592902_8095382256_pSbfIKjlX.png?updatedAt=1698592906104",
+    "https://ik.imagekit.io/ei5bqbiry/assets/sanil_unstudio.ai_335.480183549549_syM85ffeR.png?updatedAt=1698262039520",
+  ]
+  const [file, setFile] = useState([...data]);
   const [target, setTarget] = useState();
   const [productVisible, setProductVisible] = useState(false);
   const [sketch, setSketch] = useState(false);

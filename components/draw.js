@@ -7,11 +7,13 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
 
     let width = window?.innerWidth;
     let height = window?.innerHeight;
+    let clip;
+    const [clips, setClips] = useState();
 
     function updateSize() {
         const windowWidth = window.innerWidth;
         const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-         width = windowWidth - 5 * remSize;
+        width = windowWidth - 5 * remSize;
         height = window.innerHeight;
     }
    
@@ -35,79 +37,64 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         fabric.Object.prototype.cornerStyle = "rect";
         fabric.Object.prototype.cornerStrokeColor = "#2BEBC8";
         fabric.Object.prototype.cornerSize = 6;
-        c.add(
-            new fabric.Rect({
-                width: width/3,
-                height: height/2,
-                left: width/3,
-                top:height/3.5,
-                stroke: "#fae27a",
-                fill:"#1d1d20",
-                selectable: false,
-                evented: false
-            })
-        );
+
+        clip = new fabric.Rect({
+            width: width / 3,
+            height: height / 2,
+            left: width / 3,
+            top: height / 3.5,
+            stroke: "#fae27a",
+            fill: "#1d1d20",
+            selectable: false,
+            erasable: false
+        })
+        setClips(clip)
+        c.add(clip);
 
         setCanvas(c);
 
         return () => {
             c.dispose();
+            window.removeEventListener('resize', (e) => {
+                updateSize();
+            })
         };
     }, []);
 
-    const addRect = (canvas) => {
-        const rect = new fabric.Rect({
-            height: 300,
-            width: 200,
-            stroke: "#2BEBC8",
-            fill:"#ff0000"
-        });
-        canvas?.add(rect);
-        canvas?.requestRenderAll();
-    };
 
-    function PencilBrush() {
-        if (sketch) {
-            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-            canvas.freeDrawingBrush.color = lineColor;
-            canvas.freeDrawingBrush.width = lineWidth;
-            canvas.freeDrawingBrush.shadow = new fabric.Shadow({
-                blur: parseInt(0, 10) || 0,
-                offsetX: 0,
-                offsetY: 0,
-                affectStroke: true,
-                color: lineColor,
-            });
-        }
-
-    }
     useEffect(() => {
-        if (canvas && sketch) {
-            canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-            canvas.freeDrawingBrush.color = lineColor;
-            canvas.freeDrawingBrush.width = lineWidth;
-            canvas.isDrawingMode = true;
-        } else {
-            if (canvas) {
-                canvas.isDrawingMode = false;
+        if (canvas) {
+            if (sketch) {      
+                canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+                canvas.isDrawingMode = sketch;
+                canvas.freeDrawingBrush.color = lineColor;
+                canvas.freeDrawingBrush.width = lineWidth;
             }
+            else {
+                    canvas.freeDrawingBrush = null;
+                    canvas.isDrawingMode = false;
+                  }
         }
     }, [sketch])
     
     useEffect(() => {
-        if (canvas && eraser) {
-            canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
-            canvas.freeDrawingBrush.width = eraserWidth
-            canvas.isDrawingMode = true;
+        if (canvas) {
+            if (eraser) {
+                canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
+                canvas.isDrawingMode = true;
+                canvas.freeDrawingBrush.width = eraserWidth
+            }
         } 
     }, [eraser])
     
     useEffect(() => {
-        if (canvas && canvas.freeDrawingBrush) {
+        if (canvas && canvas.isDrawingMode) {
             canvas.freeDrawingBrush.width = lineWidth
             canvas.freeDrawingBrush.color = lineColor
         }
-    },[lineColor,lineWidth])
+    }, [lineColor, lineWidth])
+    
+
     useEffect(() => {
         if (canvas && canvas.freeDrawingBrush) {
             canvas.freeDrawingBrush.width = eraserWidth
@@ -119,13 +106,28 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
             fabric.Image.fromURL(
                 target,
                 function (img) {
-                    var scale = 0.2;
+                    var scale = 0.3;
+                    // img.set({
+                    //     left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
+                    //     top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
+                    //     scaleX: (scale * canvas.width) / img.width,
+                    //     scaleY: (scale * canvas.height) / img.height
+                    // });
+                    const canvasWidth = clips.width;
+                    const canvasHeight = clips.height;
                     img.set({
                         left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
                         top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
-                        scaleX: (scale * canvas.width) / img.width,
-                        scaleY: (scale * canvas.height) / img.height
-                    });
+                        cors: 'anonymous',
+                    })
+                    img.scaleToWidth(canvasWidth * 0.75);
+                    img.scaleToHeight(canvasHeight * 0.75);
+                    // img.set({
+                    //     left: (clips.width - img.getScaledWidth()) / 2,
+                    //     top :(clips.height - img.getScaledHeight()) / 2
+                    // })
+                    // img.left = (clips.width - img.getScaledWidth()) / 2;
+                    // img.top = (clips.height - img.getScaledHeight()) / 2;
                     canvas.add(img);
                     canvas?.requestRenderAll();
                     console.log(canvas._offset)
@@ -136,12 +138,52 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
             );
             setProductVisible(false)
         }
-    },[target])
+    }, [target])
+
+    function dataURLtoBlob(dataURL) {
+        var byteString = atob(dataURL.split(',')[1]);
+        var mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ab], { type: mimeString });
+    }
+
+    async function handleBlob() {
+       
+        console.log(clips)
+        let dataURL = canvas.toDataURL({
+            format: 'png',
+            width: clips.width,
+            height:clips.height,
+            left: clips.left,
+            top: clips.top,
+            quality: 1 
+        });
+
+        let blob = dataURLtoBlob(dataURL);
+        const rm = await getBase64(blob);
+        console.log({'blob':rm})
+   }
+
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+        });
+    }
 
     return (
         <div className="relative">
             <canvas id="canvas" />
-            <button className="text-white absolute left-4 top-4" onClick={() => addRect(canvas)}>Rectangle</button>
+            <button className="absolute top-4 left-4 text-white" onClick={()=>handleBlob()}>BLOB</button>
         </div>
     );
 };

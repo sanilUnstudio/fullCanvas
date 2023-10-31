@@ -19,7 +19,7 @@ const Sidebar = ({
 }) => {
 
     const [sketchOpen, setSketchOpen] = useState(false);
-
+   
     const divRef = useRef();
 
     const handleClickOutside = (event) => {
@@ -45,8 +45,8 @@ const Sidebar = ({
             <p className=' cursor-pointer'>props</p>
             <p className=' cursor-pointer' onClick={() => (setSketchOpen(!sketchOpen), setProductVisible(false))} >Sketch</p>
 
-            {productVisible && <div className='absolute left-20 z-10 top-0 bg-[#18181a] border-l h-screen max-w-[20rem]'>
-                <input type='file' className='text-center' multiple onChange={(e) => setFile((prev) => {
+            {productVisible && <div className='absolute left-20 z-10 top-0 bg-[#18181a] border-l h-screen max-w-[22rem]'>
+                <input type='file' className='text-center mx-4 mt-2' multiple onChange={(e) => setFile((prev) => {
                     if (e.target.files.length == 1) {
                         return [...prev, URL.createObjectURL(e.target.files[0])]
                     } else {
@@ -57,9 +57,9 @@ const Sidebar = ({
                         return [...prev, ...rm]
                     }
                 })} />
-                <div className='flex gap-2 justify-between px-2 flex-wrap'>
+                <div className='flex gap-2 justify-between px-2 flex-wrap mt-4'>
                     {file.length > 0 && file.map((db) => (
-                        <div className='h-36 w-36' onClick={() => setTarget(db)}>
+                        <div className='h-44 w-40 cursor-pointer border rounded-lg overflow-hidden' onClick={() => setTarget(db)}>
                             <img
                                 alt="lion"
                                 className='h-full w-[100%]'
