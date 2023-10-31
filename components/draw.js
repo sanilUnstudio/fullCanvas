@@ -16,6 +16,10 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         width = windowWidth - 5 * remSize;
         height = window.innerHeight;
     }
+
+
+
+
    
     useEffect(() => {
         updateSize();
@@ -51,15 +55,17 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         setClips(clip)
         c.add(clip);
 
+
         setCanvas(c);
 
         return () => {
-            c.dispose();
             window.removeEventListener('resize', (e) => {
                 updateSize();
             })
         };
     }, []);
+
+
 
 
     useEffect(() => {
@@ -77,19 +83,27 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         }
     }, [sketch])
     
+
+    
     useEffect(() => {
         if (canvas) {
             if (eraser) {
                 canvas.freeDrawingBrush = new fabric.EraserBrush(canvas);
                 canvas.isDrawingMode = true;
-                canvas.freeDrawingBrush.width = eraserWidth
+                canvas.freeDrawingBrush.width = parseInt(eraserWidth, 10)
             }
         } 
     }, [eraser])
     
+
+
+
+
+
+
     useEffect(() => {
         if (canvas && canvas.isDrawingMode) {
-            canvas.freeDrawingBrush.width = lineWidth
+            canvas.freeDrawingBrush.width = parseInt(lineWidth, 10)
             canvas.freeDrawingBrush.color = lineColor
         }
     }, [lineColor, lineWidth])
@@ -101,18 +115,14 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
         }
     },[eraserWidth])
 
+
+
     useEffect(() => {
         if (canvas) {
             fabric.Image.fromURL(
                 target,
                 function (img) {
                     var scale = 0.3;
-                    // img.set({
-                    //     left: canvas._offset.left + (canvas.width * (1 - scale)) / 2,
-                    //     top: canvas._offset.top + (canvas.height * (1 - scale)) / 2,
-                    //     scaleX: (scale * canvas.width) / img.width,
-                    //     scaleY: (scale * canvas.height) / img.height
-                    // });
                     const canvasWidth = clips.width;
                     const canvasHeight = clips.height;
                     img.set({
@@ -122,12 +132,6 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
                     })
                     img.scaleToWidth(canvasWidth * 0.75);
                     img.scaleToHeight(canvasHeight * 0.75);
-                    // img.set({
-                    //     left: (clips.width - img.getScaledWidth()) / 2,
-                    //     top :(clips.height - img.getScaledHeight()) / 2
-                    // })
-                    // img.left = (clips.width - img.getScaledWidth()) / 2;
-                    // img.top = (clips.height - img.getScaledHeight()) / 2;
                     canvas.add(img);
                     canvas?.requestRenderAll();
                     console.log(canvas._offset)
@@ -155,7 +159,6 @@ const Draw = ({ target,  setProductVisible, sketch, eraser, lineColor,lineWidth,
 
     async function handleBlob() {
        
-        console.log(clips)
         let dataURL = canvas.toDataURL({
             format: 'png',
             width: clips.width,
