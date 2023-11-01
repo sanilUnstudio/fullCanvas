@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState, useRef} from 'react'
 
 const Navbar = ({
     zoomValue,
@@ -6,6 +6,7 @@ const Navbar = ({
 }) => {
     let val = Math.floor(zoomValue * 100);
     const [showDropdown, setShowDropdown] = useState(false);
+    const dropRef = useRef();
     const handleDropdown = (e) => {
         let val = e
         console.log(val)
