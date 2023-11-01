@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import Navbar from '@/components/navbar'
 const Canvas = dynamic(() => import('../components/draw'), { ssr: false })
 import Sidebar from "../components/sidebar"
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
   const [eraserWidth, setEraserWidth] = useState(4);
   const [canvas, setCanvas] = useState();
   const [clips, setClips] = useState();
+  const [zoomValue, setZoomValue] = useState(1);
 
   return (
     <div className='bg-white h-screen  flex'>
@@ -44,21 +46,29 @@ export default function Home() {
         canvas={canvas}
         clips={clips}
       />
-      
-      <Canvas
-        target={target}
-        targetApi={targetApi}
-        sketch={sketch}
-        eraser={eraser}
-        setProductVisible={setProductVisible}
-        lineWidth={lineWidth}
-        lineColor={lineColor}
-        eraserWidth={eraserWidth}
-        canvas={canvas}
-        setCanvas={setCanvas}
-        setClips={setClips}
-        clips={clips}
-      />
+
+      <div>
+        <Navbar
+          setZoomValue={setZoomValue}
+          zoomValue={zoomValue}
+        />
+        <Canvas
+          target={target}
+          targetApi={targetApi}
+          setZoomValue={setZoomValue}
+          zoomValue={zoomValue}
+          sketch={sketch}
+          eraser={eraser}
+          setProductVisible={setProductVisible}
+          lineWidth={lineWidth}
+          lineColor={lineColor}
+          eraserWidth={eraserWidth}
+          canvas={canvas}
+          setCanvas={setCanvas}
+          setClips={setClips}
+          clips={clips}
+        />
+      </div>
     </div>
   )
 }

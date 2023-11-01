@@ -14,7 +14,9 @@ const Draw = ({
     canvas,
     setCanvas,
     clips,
-    setClips
+    setClips,
+    zoomValue,
+    setZoomValue
 }) => {
 
     let width = window?.innerWidth;
@@ -23,9 +25,10 @@ const Draw = ({
 
     function updateSize() {
         const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight
         const remSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
         width = windowWidth - 5 * remSize;
-        height = window.innerHeight;
+        height = windowHeight - 2 * remSize;
     }
 
 
@@ -229,6 +232,15 @@ const Draw = ({
                 var delta = opt.e.deltaY;
                 var zoom = canvas.getZoom();
                 zoom *= 0.999 ** delta;
+                if (zoom < 0.25) {
+                    zoom = 0.25
+                }
+                if (zoom > 1.5) {
+                    zoom = 1.5
+                }
+                // zoom = 0.25
+                console.log(zoom)
+                setZoomValue(zoom)
                 if (zoom > 20) zoom = 20;
                 if (zoom < 0.01) zoom = 0.01;
                 canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
@@ -238,6 +250,22 @@ const Draw = ({
 
         }
     }, [canvas])
+
+    useEffect(() => {
+        if (canvas) {
+            let wheel = true;
+            document.addEventListener('wheel', () => {
+                wheel = false
+            })
+            if (wheel) {
+                if(zoomValue < 0.25)return
+                if(zoomValue > 1.5)return
+                canvas.zoomToPoint({ x: clips.getCenterPoint().x, y: clips.getCenterPoint().y }, zoomValue);
+            }
+
+            
+        }
+    },[zoomValue])
    
 
     return (
