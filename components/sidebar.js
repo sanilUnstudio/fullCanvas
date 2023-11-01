@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Switch } from '@chakra-ui/react'
 import { fabric } from "fabric";
-
+import useOutsideClick from '@/hooks/useOutsideClick';
 const Sidebar = ({
     file,
     setFile,
@@ -27,19 +27,7 @@ const Sidebar = ({
    
     const divRef = useRef();
 
-    const handleClickOutside = (event) => {
-        if (divRef.current && !divRef.current.contains(event.target)) {
-            setSketchOpen(false);
-        }
-    };
-
-    useEffect(() => {
-        document.addEventListener('mousedown', handleClickOutside);
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
+    useOutsideClick(divRef, () => setSketchOpen(false))
 
     const hitAPI = async () => {
         try {
