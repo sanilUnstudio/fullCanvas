@@ -4,6 +4,7 @@ import { fabric } from "fabric";
 
 const Draw = ({
     target,
+    targetApi,
     setProductVisible,
     sketch,
     eraser,
@@ -154,6 +155,34 @@ const Draw = ({
             setProductVisible(false)
         }
     }, [target])
+    useEffect(() => {
+        if (canvas) {
+            fabric.Image.fromURL(
+                targetApi,
+                function (img) {
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+                    img.set({
+                        left:  0,
+                        top: 0,
+                        cors: 'anonymous',
+                        mask:false
+                    })
+                    img.scaleToWidth(clips.width * 0.75);
+                    img.scaleToHeight(clips.height * 0.75);
+                    img.left = 0;
+                    img.top = canvasHeight/3;
+                    canvas.add(img);
+                    canvas?.requestRenderAll();
+                    console.log(canvas._offset)
+                },
+                {
+                    crossOrigin: "anonymous"
+                }
+            );
+            setProductVisible(false)
+        }
+    }, [targetApi])
 
 
    

@@ -19,7 +19,8 @@ const Sidebar = ({
     lineColor,
     setLineColor,
     canvas,
-    clips
+    clips,
+    setTargetApi
 }) => {
 
     const [sketchOpen, setSketchOpen] = useState(false);
@@ -40,10 +41,6 @@ const Sidebar = ({
         };
     }, []);
 
-    useEffect(() => {
-
-    }, [])
-
     const hitAPI = async () => {
         try {
             console.log('Sending API req');
@@ -53,10 +50,10 @@ const Sidebar = ({
                 "Content-Type" :"application/json",
 
             },
-            body:JSON.stringify({msg:"dummy message"})
+                body: JSON.stringify({ msg: "https://ik.imagekit.io/ei5bqbiry/assets/sanil_unstudio.ai_335.480183549549_syM85ffeR.png?updatedAt=1698262039520" })
             });
             const data = await response.json();
-            console.log(data);
+            setTargetApi(data.msg)
         } catch (error) {
             
         }
@@ -396,7 +393,7 @@ const Sidebar = ({
                 </div>
 
             </div>}
-            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={handleConvert} >Blob</button>
+            <button type='button' className='bg-yellow-500 p-2 text-black rounded-lg cursor-pointer ' onClick={hitAPI} >Blob</button>
         </div>
 
 

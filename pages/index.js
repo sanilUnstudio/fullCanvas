@@ -12,6 +12,7 @@ export default function Home() {
   ]
   const [file, setFile] = useState([...data]);
   const [target, setTarget] = useState();
+  const [targetApi, setTargetApi] = useState();
   const [productVisible, setProductVisible] = useState(false);
   const [sketch, setSketch] = useState(false);
   const [eraser, setEraser] = useState(false);
@@ -27,6 +28,7 @@ export default function Home() {
         file={file}
         setFile={setFile}
         setTarget={setTarget}
+        setTargetApi={setTargetApi}
         productVisible={productVisible}
         setProductVisible={setProductVisible}
         setSketch={setSketch}
@@ -45,6 +47,7 @@ export default function Home() {
       
       <Canvas
         target={target}
+        targetApi={targetApi}
         sketch={sketch}
         eraser={eraser}
         setProductVisible={setProductVisible}
