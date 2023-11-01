@@ -170,7 +170,7 @@ const Draw = ({
                     })
                     img.scaleToWidth(clips.width * 0.75);
                     img.scaleToHeight(clips.height * 0.75);
-                    img.left = 0;
+                    img.left = canvasWidth - img.width;
                     img.top = canvasHeight/3;
                     canvas.add(img);
                     canvas?.requestRenderAll();
@@ -184,7 +184,60 @@ const Draw = ({
         }
     }, [targetApi])
 
+    function deleteObject() {
+        const activeObject = canvas.getActiveObject();
+        const activeObjects = canvas.getActiveObjects();
 
+        if (!activeObject) return;
+        if (activeObjects.length > 1) {
+            canvas.remove(activeObjects);
+        } else {
+            canvas.remove(activeObject);
+        }
+        canvas.requestRenderAll();
+    }
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            // Check if the delete key was pressed
+            const activeElement = document.activeElement;
+            //console.log('Active element tag name : ', activeElement.tagName)
+            if (
+                activeElement.tagName === 'INPUT' ||
+                activeElement.tagName === 'TEXTAREA'
+            )
+                return;
+            if (event.key === 'Delete' || event.key === 'Backspace') {
+                // Call the deleteObject function here
+                //Need to check if focus is on Canvas or not
+                canvas.getActiveObject() && deleteObject(event);
+            }
+        };
+
+        // Add a keydown event listener to the window object
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Clean up the event listener
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [deleteObject]);
+
+
+    useEffect(() => {
+        if (canvas) {
+            canvas.on('mouse:wheel', function (opt) {
+                var delta = opt.e.deltaY;
+                var zoom = canvas.getZoom();
+                zoom *= 0.999 ** delta;
+                if (zoom > 20) zoom = 20;
+                if (zoom < 0.01) zoom = 0.01;
+                canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+                opt.e.preventDefault();
+                opt.e.stopPropagation();
+            });
+
+        }
+    }, [canvas])
    
 
     return (
